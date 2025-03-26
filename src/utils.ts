@@ -1,7 +1,7 @@
 import {
-  hiddenInputMap,
-  formsMap,
   formElementsMap,
+  formsMap,
+  hiddenInputMap,
   internalsMap,
 } from "./maps.js";
 import {
@@ -362,7 +362,13 @@ export const overrideFormMethod = (
  */
 export const upgradeInternals = (ref: FormAssociatedCustomElement) => {
   if (ref.constructor["formAssociated"]) {
-    const internals = internalsMap.get(ref);
+    let internals = internalsMap.get(ref);
+    // we might have cases where internals are not set
+    if (internals === undefined) {
+      console.warn('ElementInternals missing from the element', ref);
+      ref.attachInternals();
+      internals = internalsMap.get(ref);
+    }
     const { labels, form } = internals;
     initLabels(ref, labels);
     initForm(ref, form, internals);
