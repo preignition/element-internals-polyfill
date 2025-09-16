@@ -383,7 +383,7 @@ export function forceCustomStateSetPolyfill(
   window.CustomStateSet = CustomStateSet;
 
   if (attachInternals) {
-    HTMLElement.prototype.attachInternals = function (...args) {
+    HTMLElement.prototype.attachInternals = function(...args) {
       const internals = attachInternals.call(this, args);
       internals.states = new CustomStateSet(this);
       return internals;
@@ -416,14 +416,14 @@ export function forceElementInternalsPolyfill(forceCustomStateSet = true) {
 
   if (typeof CustomElementRegistry !== "undefined") {
     const define = CustomElementRegistry.prototype.define;
-    CustomElementRegistry.prototype.define = function (
+    CustomElementRegistry.prototype.define = function(
       name,
       constructor,
       options
     ) {
       if (constructor.formAssociated) {
         const connectedCallback = constructor.prototype.connectedCallback;
-        constructor.prototype.connectedCallback = function () {
+        constructor.prototype.connectedCallback = function() {
           if (!connectedCallbackMap.has(this)) {
             connectedCallbackMap.set(this, true);
 
@@ -449,7 +449,7 @@ export function forceElementInternalsPolyfill(forceCustomStateSet = true) {
    * on a built-in element will throw an error.
    */
   if (typeof HTMLElement !== "undefined") {
-    HTMLElement.prototype.attachInternals = function (): ElementInternals {
+    HTMLElement.prototype.attachInternals = function(): ElementInternals {
       if (!this.tagName) {
         /** This happens in the LitSSR environment. Here we can generally ignore internals for now */
         return {} as object as ElementInternals;
@@ -458,11 +458,11 @@ export function forceElementInternalsPolyfill(forceCustomStateSet = true) {
           `Failed to execute 'attachInternals' on 'HTMLElement': Unable to attach ElementInternals to non-custom elements.`
         );
       }
-      if (internalsMap.has(this)) {
-        throw new DOMException(
-          `DOMException: Failed to execute 'attachInternals' on 'HTMLElement': ElementInternals for the specified element was already attached.`
-        );
-      }
+      // if (internalsMap.has(this)) {
+      //   throw new DOMException(
+      //     `DOMException: Failed to execute 'attachInternals' on 'HTMLElement': ElementInternals for the specified element was already attached.`
+      //   );
+      // }
       return new ElementInternals(this);
     };
   }
